@@ -49,6 +49,37 @@ export function glossarySize() {
 }
 
 /**
+ * Hide Lancer jargon from the translator behind placeholders, then put the English
+ * back afterwards. Machine translation renders "hard cover" as "твёрдая оболочка";
+ * left in English next to the glossary above, the sentence stays readable.
+ *
+ * `#0#` was picked by testing which markers survive a round trip intact — it does,
+ * and it never occurs in Lancer text.
+ */
+export function maskTerms(text) {
+  const identity = { masked: text, restore: translated => translated };
+  if ( !matcher || !text ) return identity;
+
+  const slots = [];
+  const index = new Map();
+  const masked = text.replace(matcher, match => {
+    const key = match.toLowerCase();
+    if ( !index.has(key) ) {
+      index.set(key, slots.length);
+      slots.push(match);
+    }
+    return `#${index.get(key)}#`;
+  });
+
+  if ( !slots.length ) return identity;
+  return {
+    masked,
+    // A marker the service mangled anyway is left as-is rather than crashing.
+    restore: translated => translated.replace(/#(\d+)#/g, (whole, n) => slots[Number(n)] ?? whole)
+  };
+}
+
+/**
  * Terms found in `text`, in order of first appearance and deduplicated.
  * @returns {{term: string, translation: string}[]}
  */

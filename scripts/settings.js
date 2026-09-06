@@ -69,6 +69,15 @@ export function registerSettings() {
     default: true
   });
 
+  game.settings.register(MODULE_ID, "keepTerms", {
+    name: "LANCER_HT.Settings.KeepTerms.Name",
+    hint: "LANCER_HT.Settings.KeepTerms.Hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true
+  });
+
   game.settings.register(MODULE_ID, "provider", {
     name: "LANCER_HT.Settings.Provider.Name",
     hint: "LANCER_HT.Settings.Provider.Hint",

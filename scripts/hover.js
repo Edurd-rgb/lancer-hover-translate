@@ -2,7 +2,7 @@ import {
   MODULE_ID, SCOPE_SELECTORS, EXCLUDE_SELECTORS, BLOCK_TAGS, BLOCK_FALLBACK_SELECTORS
 } from "./constants.js";
 import { setting } from "./settings.js";
-import { findTerms } from "./glossary.js";
+import { findTerms, maskTerms } from "./glossary.js";
 import { translate, providerEnabled } from "./translator.js";
 import { show, update, hide, isVisible } from "./tooltip.js";
 
@@ -102,7 +102,9 @@ async function run(block) {
   const text = extractText(block);
   if ( !isTranslatable(text) ) return dismiss();
 
-  const terms = setting("glossary") ? findTerms(text) : [];
+  // A little more room than the default: with masking on, every English term left
+  // in the paragraph needs its line above.
+  const terms = setting("glossary") ? findTerms(text, 12) : [];
 
   if ( !providerEnabled() ) {
     // Glossary-only mode: a paragraph with no known terms has nothing to say.
@@ -122,10 +124,13 @@ async function run(block) {
 
   controller = new AbortController();
   const request = controller;
+  // Terms go to the service masked and come back English, so the paragraph below
+  // and the glossary above use the same words.
+  const { masked, restore } = setting("keepTerms") ? maskTerms(text) : { masked: text, restore: t => t };
   try {
-    const result = await translate(text, { signal: request.signal });
+    const result = await translate(masked, { signal: request.signal });
     if ( request.signal.aborted || (shownBlock !== block) ) return;
-    update({ body: result, state: "text" });
+    update({ body: restore(result), state: "text" });
   }
   catch ( err ) {
     if ( request.signal.aborted || (shownBlock !== block) ) return;
