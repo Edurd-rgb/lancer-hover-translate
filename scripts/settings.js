@@ -75,7 +75,9 @@ export function registerSettings() {
     scope: "world",
     config: true,
     type: String,
-    default: "none",
+    // MyMemory out of the box: it needs no key, so a fresh install translates
+    // immediately instead of looking broken.
+    default: "mymemory",
     choices: {
       none: "LANCER_HT.Settings.Provider.None",
       mymemory: "LANCER_HT.Settings.Provider.MyMemory",

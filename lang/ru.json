@@ -24,7 +24,7 @@
   "LANCER_HT.Settings.Glossary.Hint": "Показывать в верхней части подсказки термины Лансера, найденные в абзаце.",
 
   "LANCER_HT.Settings.Provider.Name": "Служба перевода",
-  "LANCER_HT.Settings.Provider.Hint": "Кто переводит абзац целиком. Без службы работает только словарь терминов.",
+  "LANCER_HT.Settings.Provider.Hint": "Кто переводит абзац целиком. Текст абзаца при этом уходит из браузера игрока во внешний сервис — выберите «Только словарь», если это нежелательно.",
   "LANCER_HT.Settings.Provider.None": "Только словарь",
   "LANCER_HT.Settings.Provider.MyMemory": "MyMemory (бесплатно, без ключа)",
   "LANCER_HT.Settings.Provider.LibreTranslate": "LibreTranslate",

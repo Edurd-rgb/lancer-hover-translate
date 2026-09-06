@@ -21,7 +21,7 @@
   "LANCER_HT.Settings.Glossary.Name": "Term glossary",
   "LANCER_HT.Settings.Glossary.Hint": "List Lancer terms found in the paragraph at the top of the hint.",
   "LANCER_HT.Settings.Provider.Name": "Translation service",
-  "LANCER_HT.Settings.Provider.Hint": "Who translates the whole paragraph. Without a service only the glossary works.",
+  "LANCER_HT.Settings.Provider.Hint": "Who translates the whole paragraph. The paragraph leaves the player's browser for an external service — pick \"Glossary only\" if that is unwanted.",
   "LANCER_HT.Settings.Provider.None": "Glossary only",
   "LANCER_HT.Settings.Provider.MyMemory": "MyMemory (free, no key)",
   "LANCER_HT.Settings.Provider.LibreTranslate": "LibreTranslate",
