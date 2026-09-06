@@ -67,6 +67,23 @@ export function cacheSize() {
 /*  Providers                                   */
 /* -------------------------------------------- */
 
+/**
+ * Both providers report failures as JSON — Google as {error:{message}}, LibreTranslate
+ * as {error:"..."}. Surface just the message: the raw blob is unreadable in a tooltip.
+ */
+async function failure(res, label) {
+  let detail = "";
+  try {
+    const data = await res.json();
+    if ( typeof data?.error === "string" ) detail = data.error;
+    else detail = data?.error?.message ?? "";
+  }
+  catch {
+    // Body was not JSON — a proxy error page, most likely.
+  }
+  return new Error(`${label} ${res.status}: ${detail || res.statusText}`);
+}
+
 /** Google returns HTML entities even for format:"text", so unescape before display. */
 function decodeEntities(text) {
   const el = document.createElement("textarea");
@@ -87,7 +104,7 @@ async function libretranslate(text, target, signal) {
     body: JSON.stringify(body),
     signal
   });
-  if ( !res.ok ) throw new Error(`LibreTranslate ${res.status}: ${await res.text()}`);
+  if ( !res.ok ) throw await failure(res, "LibreTranslate");
   const data = await res.json();
   if ( !data?.translatedText ) throw new Error("LibreTranslate вернул пустой ответ");
   return data.translatedText;
@@ -103,7 +120,7 @@ async function google(text, target, signal) {
     body: JSON.stringify({ q: text, source: "en", target, format: "text" }),
     signal
   });
-  if ( !res.ok ) throw new Error(`Google Translate ${res.status}: ${await res.text()}`);
+  if ( !res.ok ) throw await failure(res, "Google Translate");
   const data = await res.json();
   const out = data?.data?.translations?.[0]?.translatedText;
   if ( !out ) throw new Error("Google Translate вернул пустой ответ");
