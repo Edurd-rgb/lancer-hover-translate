@@ -1,0 +1,37 @@
+{
+  "id": "lancer-hover-translate",
+  "title": "Lancer Hover Translate",
+  "description": "Наводишь курсор на английский абзац — рядом всплывает русский перевод: термины Лансера из локального словаря плюс машинный перевод всего абзаца.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "esmodules": [
+    "scripts/module.js"
+  ],
+  "styles": [
+    "styles/hover-translate.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "ru",
+      "name": "Русский",
+      "path": "lang/ru.json"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Edurd-rgb",
+      "url": "https://github.com/Edurd-rgb"
+    }
+  ],
+  "url": "https://github.com/Edurd-rgb/lancer-hover-translate",
+  "manifest": "https://raw.githubusercontent.com/Edurd-rgb/lancer-hover-translate/refs/heads/main/module.json",
+  "download": "https://github.com/Edurd-rgb/lancer-hover-translate/releases/download/v0.1.0/module.zip"
+}
