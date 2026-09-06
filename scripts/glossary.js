@@ -49,9 +49,10 @@ export function glossarySize() {
 }
 
 /**
- * Hide Lancer jargon from the translator behind placeholders, then put the English
- * back afterwards. Machine translation renders "hard cover" as "твёрдая оболочка";
- * left in English next to the glossary above, the sentence stays readable.
+ * Hide Lancer jargon from the translator behind placeholders, then drop the
+ * glossary's own wording into the result. Machine translation renders "hard cover"
+ * as "твёрдая оболочка"; this way the sentence comes back fully Russian but with
+ * the terminology the table actually uses.
  *
  * `#0#` was picked by testing which markers survive a round trip intact — it does,
  * and it never occurs in Lancer text.
@@ -66,7 +67,8 @@ export function maskTerms(text) {
     const key = match.toLowerCase();
     if ( !index.has(key) ) {
       index.set(key, slots.length);
-      slots.push(match);
+      // The approved translation, not the English surface form.
+      slots.push(entries.get(key) ?? match);
     }
     return `#${index.get(key)}#`;
   });
