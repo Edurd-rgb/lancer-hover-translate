@@ -78,9 +78,19 @@ export function registerSettings() {
     default: "none",
     choices: {
       none: "LANCER_HT.Settings.Provider.None",
+      mymemory: "LANCER_HT.Settings.Provider.MyMemory",
       libretranslate: "LANCER_HT.Settings.Provider.LibreTranslate",
       google: "LANCER_HT.Settings.Provider.Google"
     }
+  });
+
+  game.settings.register(MODULE_ID, "email", {
+    name: "LANCER_HT.Settings.Email.Name",
+    hint: "LANCER_HT.Settings.Email.Hint",
+    scope: "world",
+    config: true,
+    type: String,
+    default: ""
   });
 
   game.settings.register(MODULE_ID, "endpoint", {

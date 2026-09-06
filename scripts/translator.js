@@ -110,6 +110,55 @@ async function libretranslate(text, target, signal) {
   return data.translatedText;
 }
 
+/** MyMemory refuses anything past 500 characters, so long paragraphs go in pieces. */
+const MYMEMORY_LIMIT = 450;
+
+/** Split on sentence ends where possible, on a space otherwise, never mid-word. */
+function chunk(text, limit) {
+  if ( text.length <= limit ) return [text];
+  const parts = [];
+  let rest = text;
+  while ( rest.length > limit ) {
+    const window = rest.slice(0, limit);
+    const sentence = Math.max(window.lastIndexOf(". "), window.lastIndexOf("! "), window.lastIndexOf("? "));
+    let cut = (sentence > limit / 2) ? sentence + 1 : window.lastIndexOf(" ");
+    if ( cut <= 0 ) cut = limit;
+    parts.push(rest.slice(0, cut).trim());
+    rest = rest.slice(cut).trim();
+  }
+  if ( rest ) parts.push(rest);
+  return parts;
+}
+
+async function mymemory(text, target, signal) {
+  const email = String(setting("email") || "").trim();
+  const pieces = [];
+
+  for ( const part of chunk(text, MYMEMORY_LIMIT) ) {
+    const params = new URLSearchParams({ q: part, langpair: `en|${target}` });
+    // Supplying an address raises the free daily allowance tenfold.
+    if ( email ) params.set("de", email);
+
+    const res = await fetch(`https://api.mymemory.translated.net/get?${params}`, { signal });
+    if ( !res.ok ) throw await failure(res, "MyMemory");
+    const data = await res.json();
+
+    // MyMemory answers 200 even for quota and length errors — the real code is in
+    // the body, and the "translation" is then the error text itself.
+    const status = Number(data?.responseStatus);
+    if ( data?.quotaFinished || (status !== 200) ) {
+      const detail = data?.responseDetails || data?.responseData?.translatedText || "";
+      throw new Error(`MyMemory ${status || 429}: ${detail}`);
+    }
+
+    const piece = data?.responseData?.translatedText;
+    if ( !piece ) throw new Error("MyMemory вернул пустой ответ");
+    pieces.push(decodeEntities(piece));
+  }
+
+  return pieces.join(" ");
+}
+
 async function google(text, target, signal) {
   const apiKey = setting("apiKey");
   if ( !apiKey ) throw new Error(game.i18n.localize("LANCER_HT.Error.NoKey"));
@@ -127,7 +176,7 @@ async function google(text, target, signal) {
   return decodeEntities(out);
 }
 
-const PROVIDERS = { libretranslate, google };
+const PROVIDERS = { mymemory, libretranslate, google };
 
 export function providerEnabled() {
   return setting("provider") in PROVIDERS;
